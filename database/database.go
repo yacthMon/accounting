@@ -1,6 +1,7 @@
 package database
 
 import (
+	"accounting/helper"
 	"accounting/models"
 	"context"
 	"fmt"
@@ -15,10 +16,17 @@ import (
 var (
 	mu sync.Mutex
 	store *mongodb.Storage
+	isLogVerbose bool
 )
 
 // Connect with database
 func Connect() {
+	logVerbose, err := strconv.ParseBool(os.Getenv("LOG_VERBOSE"))
+	if err != nil {
+		isLogVerbose = false
+	} else {
+		isLogVerbose = logVerbose
+	}
 	mongoHost := os.Getenv("MONGO_HOST")
 	mongoPort, err := strconv.Atoi(os.Getenv("MONGO_PORT"))
 	if err != nil {
@@ -56,6 +64,9 @@ func GetTransaction() []*models.Transaction {
 	for _, result := range findResult {
 		cursor.Decode(&result)
 		results = append(results, result)
+		if isLogVerbose {
+			helper.PrintJSON(result)
+		}
 	}
 
 	return results
