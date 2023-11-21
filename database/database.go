@@ -27,12 +27,18 @@ func Connect() {
 	} else {
 		isLogVerbose = logVerbose
 	}
-	mongoHost := os.Getenv("MONGO_HOST")
+	mongoHost, isFound := os.LookupEnv("MONGO_HOST")
+	if !isFound {
+		mongoHost = "127.0.0.1"
+	}
 	mongoPort, err := strconv.Atoi(os.Getenv("MONGO_PORT"))
 	if err != nil {
 		mongoPort = 27017
 	}
-	mongoDatabase := os.Getenv("MONGO_DATABASE")
+	mongoDatabase, isFound := os.LookupEnv("MONGO_DATABASE")
+	if !isFound {
+		mongoDatabase = "accounting"
+	}
 	store = mongodb.New(mongodb.Config{
     Host:       mongoHost,
     Port:       mongoPort,
