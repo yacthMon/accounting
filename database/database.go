@@ -2,12 +2,14 @@ package database
 
 import (
 	"accounting/models"
+	"context"
 	"fmt"
 	"os"
 	"strconv"
 	"sync"
 
 	"github.com/gofiber/storage/mongodb"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var (
@@ -38,4 +40,23 @@ func Insert(user *models.User) {
 }
 
 func Get() {
+}
+
+func GetTransaction() []*models.Transaction {
+	filter := bson.D{{}}
+	cursor, err := store.Conn().Collection("transactions").Find(context.TODO(), filter)
+	if err != nil {
+		fmt.Printf("Error %s", err)
+	}
+	var findResult []*models.Transaction
+	var results []*models.Transaction
+	if err = cursor.All(context.TODO(), &findResult); err != nil {
+		panic(err)
+	}
+	for _, result := range findResult {
+		cursor.Decode(&result)
+		results = append(results, result)
+	}
+
+	return results
 }

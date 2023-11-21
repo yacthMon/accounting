@@ -8,15 +8,14 @@ import (
 	"github.com/gofiber/fiber/v2/utils"
 )
 
-// UserList returns a list of users
-func UserList(c *fiber.Ctx) error {
-	// users := database.Get()
+// TransactionList returns a list of transaction
+func TransactionList(c *fiber.Ctx) error {
+	transactions := database.GetTransaction()
 
-	// return c.JSON(fiber.Map{
-	// 	"success": true,
-	// 	"users":   users,
-	// })
-	return c.JSON(fiber.ErrNotFound)
+	return c.JSON(fiber.Map{
+		"success": true,
+		"transactions":  transactions,
+	})
 }
 
 // UserCreate registers a user

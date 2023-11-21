@@ -23,7 +23,7 @@ func main() {
 	if err != nil {
 			log.Fatal("Error loading .env file")
 	}
-	
+
 	// Parse command-line flags
 	flag.Parse()
 
@@ -43,7 +43,7 @@ func main() {
 	v1 := app.Group("/api/v1")
 
 	// Bind handlers
-	v1.Get("/users", handlers.UserList)
+	v1.Get("/transactions", handlers.TransactionList)
 	v1.Post("/users", handlers.UserCreate)
 
 	// Setup static files
