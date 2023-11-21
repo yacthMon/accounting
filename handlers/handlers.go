@@ -10,12 +10,13 @@ import (
 
 // UserList returns a list of users
 func UserList(c *fiber.Ctx) error {
-	users := database.Get()
+	// users := database.Get()
 
-	return c.JSON(fiber.Map{
-		"success": true,
-		"users":   users,
-	})
+	// return c.JSON(fiber.Map{
+	// 	"success": true,
+	// 	"users":   users,
+	// })
+	return c.JSON(fiber.ErrNotFound)
 }
 
 // UserCreate registers a user
