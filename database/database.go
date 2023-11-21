@@ -48,8 +48,12 @@ func Connect() {
 	fmt.Println("Connected with Database")
 }
 
-func Insert(user *models.User) {
+func InsertTransaction(transaction *models.Transaction) {
 	mu.Lock()
+	_, err := store.Conn().Collection("transactions").InsertOne(context.TODO(), transaction)
+	if err != nil {
+		panic(err)
+	}
 	mu.Unlock()
 }
 

@@ -44,7 +44,7 @@ func main() {
 
 	// Bind handlers
 	v1.Get("/transactions", handlers.TransactionList)
-	v1.Post("/users", handlers.UserCreate)
+	v1.Post("/transaction", handlers.TransactionCreate)
 
 	// Setup static files
 	app.Static("/", "./static/public")

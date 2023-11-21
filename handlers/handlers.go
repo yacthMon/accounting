@@ -3,9 +3,9 @@ package handlers
 import (
 	"accounting/database"
 	"accounting/models"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/utils"
 )
 
 // TransactionList returns a list of transaction
@@ -19,17 +19,33 @@ func TransactionList(c *fiber.Ctx) error {
 }
 
 // UserCreate registers a user
-func UserCreate(c *fiber.Ctx) error {
-	user := &models.User{
-		// Note: when writing to external database,
-		// we can simply use - Name: c.FormValue("user")
-		Name: utils.CopyString(c.FormValue("user")),
+func TransactionCreate(c *fiber.Ctx) error {
+	payload := struct {
+		AccountID     string `json:"accountId"`
+		TransactionID  string `json:"transactionId"`
+		Total float32 `json:"total"`
+		TransactionLabel string `json:"transactionLabel"`
+		AccountType models.AccountType `json:"accountType"`
+	}{}
+	if err := c.BodyParser(&payload); err != nil {
+		return c.JSON(fiber.Map{
+			"success": false,
+			"msg": err,
+		})
 	}
-	database.Insert(user)
+	newTransaction := &models.Transaction{
+		AccountID: payload.AccountID,
+		TransactionID: payload.TransactionID,
+		Total: payload.Total,
+		TransactionLabel: payload.TransactionLabel,
+		AccountType: payload.AccountType,
+		TransactionDate: time.Now(),
+	}
+	database.InsertTransaction(newTransaction)
 
 	return c.JSON(fiber.Map{
 		"success": true,
-		"user":    user,
+		"transaction":    newTransaction,
 	})
 }
 
