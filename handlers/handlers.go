@@ -18,7 +18,7 @@ func TransactionList(c *fiber.Ctx) error {
 	})
 }
 
-// UserCreate registers a user
+// TransactionCreate create a transaction record
 func TransactionCreate(c *fiber.Ctx) error {
 	payload := struct {
 		AccountID     string `json:"accountId"`
