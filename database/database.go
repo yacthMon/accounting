@@ -8,9 +8,11 @@ import (
 	"os"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gofiber/storage/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var (
@@ -60,8 +62,8 @@ func InsertTransaction(transaction *models.Transaction) {
 func Get() {
 }
 
-func GetTransaction() []*models.Transaction {
-	filter := bson.D{{}}
+func GetTransaction(transactionFilter *models.TransactionFilter) []*models.Transaction {
+	filter := CreateFilterBSON(transactionFilter)
 	cursor, err := store.Conn().Collection("transactions").Find(context.TODO(), filter)
 	if err != nil {
 		fmt.Printf("Error %s", err)
@@ -80,4 +82,25 @@ func GetTransaction() []*models.Transaction {
 	}
 
 	return results
+}
+
+func CreateFilterBSON(transactionFilter *models.TransactionFilter) bson.M{
+	filter := bson.M{}
+	if(transactionFilter == nil ) {
+		return filter
+	}
+	if transactionFilter.FilterDay != nil {
+		now := time.Now()
+		fmt.Println(now)
+		startDate := now.Add(time.Duration(-*transactionFilter.FilterDay * 24)  * time.Hour)
+		filter["transactionDate"] = bson.M{"$gte": primitive.NewDateTimeFromTime(startDate) }
+	}
+	if transactionFilter.AccountID != nil {
+		filter["accountId"] = transactionFilter.AccountID
+		fmt.Println("Append filter Account ID")
+	}
+	if isLogVerbose {
+		fmt.Println(filter)
+	}
+	return filter
 }

@@ -10,7 +10,16 @@ import (
 
 // TransactionList returns a list of transaction
 func TransactionList(c *fiber.Ctx) error {
-	transactions := database.GetTransaction()
+	payload := struct {
+		Filter	*models.TransactionFilter `json:"filter,omitempty"`
+	}{}
+	if err := c.BodyParser(&payload); err != nil && len(c.Body()) > 0  {
+		return c.JSON(fiber.Map{
+			"success": false,
+			"msg": err,
+		})
+	}
+	transactions := database.GetTransaction(payload.Filter)
 
 	return c.JSON(fiber.Map{
 		"success": true,
