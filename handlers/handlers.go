@@ -22,7 +22,6 @@ func TransactionList(c *fiber.Ctx) error {
 func TransactionCreate(c *fiber.Ctx) error {
 	payload := struct {
 		AccountID     string `json:"accountId"`
-		TransactionID  string `json:"transactionId"`
 		Total float32 `json:"total"`
 		TransactionLabel string `json:"transactionLabel"`
 		AccountType models.AccountType `json:"accountType"`
@@ -35,7 +34,6 @@ func TransactionCreate(c *fiber.Ctx) error {
 	}
 	newTransaction := &models.Transaction{
 		AccountID: payload.AccountID,
-		TransactionID: payload.TransactionID,
 		Total: payload.Total,
 		TransactionLabel: payload.TransactionLabel,
 		AccountType: payload.AccountType,
