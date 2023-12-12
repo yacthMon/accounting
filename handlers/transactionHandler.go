@@ -1,15 +1,30 @@
 package handlers
 
 import (
-	"accounting/database"
 	"accounting/models"
+	"accounting/repositories"
+	"fmt"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
 
+type TransactionHandler struct { 
+	transactionRepository repositories.TransactionRepository
+}
+
+func CreateTransactionHandler(transactionRepository repositories.TransactionRepository) Handler {
+	return &TransactionHandler{transactionRepository:transactionRepository}
+}
+
+func (h *TransactionHandler) Mount(router fiber.Router) {
+	router.Get("/transactions", h.TransactionList)
+	router.Post("/transaction", h.TransactionCreate)
+	fmt.Println("Transaction mount complete")
+}
+
 // TransactionList returns a list of transaction
-func TransactionList(c *fiber.Ctx) error {
+func (h *TransactionHandler) TransactionList(c *fiber.Ctx) error {
 	payload := struct {
 		Filter	*models.TransactionFilter `json:"filter,omitempty"`
 	}{}
@@ -19,7 +34,7 @@ func TransactionList(c *fiber.Ctx) error {
 			"msg": err,
 		})
 	}
-	transactions := database.GetTransaction(payload.Filter)
+	transactions := h.transactionRepository.GetTransaction(payload.Filter)
 
 	return c.JSON(fiber.Map{
 		"success": true,
@@ -28,7 +43,7 @@ func TransactionList(c *fiber.Ctx) error {
 }
 
 // TransactionCreate create a transaction record
-func TransactionCreate(c *fiber.Ctx) error {
+func (h *TransactionHandler) TransactionCreate(c *fiber.Ctx) error {
 	payload := struct {
 		AccountID     string `json:"accountId"`
 		Total float32 `json:"total"`
@@ -48,7 +63,7 @@ func TransactionCreate(c *fiber.Ctx) error {
 		AccountType: payload.AccountType,
 		TransactionDate: time.Now(),
 	}
-	database.InsertTransaction(newTransaction)
+	h.transactionRepository.InsertTransaction(newTransaction)
 
 	return c.JSON(fiber.Map{
 		"success": true,

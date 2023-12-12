@@ -3,6 +3,7 @@ package main
 import (
 	"accounting/database"
 	"accounting/handlers"
+	"accounting/repositories"
 
 	"flag"
 	"log"
@@ -18,6 +19,45 @@ var (
 	prod = flag.Bool("prod", false, "Enable prefork in Production")
 )
 
+type FiberApp struct {
+	app *fiber.App
+	db database.Database
+}
+
+func NewFiberApp(db database.Database) FiberApp {
+	return FiberApp{
+		app: fiber.New(fiber.Config{
+			Prefork: *prod, // go run app.go -prod
+		}),
+		db: db,
+	}
+}
+
+func (a *FiberApp) Start() {
+	// Middleware
+	a.app.Use(recover.New())
+	a.app.Use(logger.New())
+
+	a.InitializeTransactionHandler()
+
+	// Order Matter
+	// Setup static files
+	a.app.Static("/", "./static/public")
+
+	// Handle not founds
+	a.app.Use(handlers.NotFound)
+
+	// Listen on port 3000
+	log.Fatal(a.app.Listen(*port)) // go run app.go -port=:3000
+}
+
+func (a *FiberApp) InitializeTransactionHandler() {
+	v1 := a.app.Group("/api/v1")
+	transactionRepository := repositories.CreateTransactionMongoRepository(a.db.GetDB(), a.db.IsLogVerbose())
+	transactionHandler := handlers.CreateTransactionHandler(transactionRepository)
+	transactionHandler.Mount(v1)
+}
+
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
@@ -27,31 +67,9 @@ func main() {
 	// Parse command-line flags
 	flag.Parse()
 
-	// Connected with database
-	database.Connect()
+	db := database.CreateMongoDB()
 
-	// Create fiber app
-	app := fiber.New(fiber.Config{
-		Prefork: *prod, // go run app.go -prod
-	})
+	fiberApp := NewFiberApp(db)
+	fiberApp.Start()
 
-	// Middleware
-	app.Use(recover.New())
-	app.Use(logger.New())
-
-	// Create a /api/v1 endpoint
-	v1 := app.Group("/api/v1")
-
-	// Bind handlers
-	v1.Get("/transactions", handlers.TransactionList)
-	v1.Post("/transaction", handlers.TransactionCreate)
-
-	// Setup static files
-	app.Static("/", "./static/public")
-
-	// Handle not founds
-	app.Use(handlers.NotFound)
-
-	// Listen on port 3000
-	log.Fatal(app.Listen(*port)) // go run app.go -port=:3000
 }
