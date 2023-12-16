@@ -7,6 +7,6 @@ import (
 type (
 	TransactionRepository interface {
 		InsertTransaction(transaction *models.Transaction)
-		GetTransaction(transactionFilter *models.TransactionFilter) []*models.Transaction
+		GetTransaction(transactionFilter *models.TransactionFilterDTO) []*models.Transaction
 	}
 )
