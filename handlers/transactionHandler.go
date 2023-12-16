@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"accounting/models"
-	"accounting/repositories"
+	"accounting/usecases"
 	"fmt"
 	"time"
 
@@ -10,11 +10,11 @@ import (
 )
 
 type TransactionHandler struct { 
-	transactionRepository repositories.TransactionRepository
+	TransactionUseCase usecases.TransactionUseCase
 }
 
-func CreateTransactionHandler(transactionRepository repositories.TransactionRepository) Handler {
-	return &TransactionHandler{transactionRepository:transactionRepository}
+func CreateTransactionHandler(transactionUseCase usecases.TransactionUseCase) Handler {
+	return &TransactionHandler{TransactionUseCase: transactionUseCase}
 }
 
 func (h *TransactionHandler) Mount(router fiber.Router) {
@@ -32,7 +32,7 @@ func (h *TransactionHandler) TransactionList(c *fiber.Ctx) error {
 			"msg": err,
 		})
 	}
-	transactions := h.transactionRepository.GetTransaction(payload.Filter)
+	transactions := h.TransactionUseCase.GetTransaction(payload.Filter)
 
 	return c.JSON(fiber.Map{
 		"success": true,
@@ -56,7 +56,7 @@ func (h *TransactionHandler) TransactionCreate(c *fiber.Ctx) error {
 		AccountType: payload.AccountType,
 		TransactionDate: time.Now(),
 	}
-	h.transactionRepository.InsertTransaction(newTransaction)
+	h.TransactionUseCase.InsertTransaction(newTransaction)
 
 	return c.JSON(fiber.Map{
 		"success": true,
