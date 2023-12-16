@@ -3,6 +3,8 @@ package helper
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"strings"
 )
 
 func PrintJSON(result interface{}) {
@@ -12,4 +14,9 @@ func PrintJSON(result interface{}) {
 	} else {
 		fmt.Printf("%s\n", output)
 	}
+}
+
+func ConvertObjToStringReader[T any](obj T) io.Reader {
+ result, _ := json.Marshal(&obj)
+ return strings.NewReader(string(result))
 }
