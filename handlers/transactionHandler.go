@@ -26,7 +26,7 @@ func (h *TransactionHandler) Mount(router fiber.Router) {
 // TransactionList returns a list of transaction
 func (h *TransactionHandler) TransactionList(c *fiber.Ctx) error {
 	payload := struct {
-		Filter	*models.TransactionFilter `json:"filter,omitempty"`
+		Filter	*models.TransactionFilterDTO `json:"filter,omitempty"`
 	}{}
 	if err := c.BodyParser(&payload); err != nil && len(c.Body()) > 0  {
 		return c.JSON(fiber.Map{
@@ -44,12 +44,7 @@ func (h *TransactionHandler) TransactionList(c *fiber.Ctx) error {
 
 // TransactionCreate create a transaction record
 func (h *TransactionHandler) TransactionCreate(c *fiber.Ctx) error {
-	payload := struct {
-		AccountID     string `json:"accountId"`
-		Total float32 `json:"total"`
-		TransactionLabel string `json:"transactionLabel"`
-		AccountType models.AccountType `json:"accountType"`
-	}{}
+	payload := &models.TransactionCreateDTO{}
 	if err := c.BodyParser(&payload); err != nil {
 		return c.JSON(fiber.Map{
 			"success": false,

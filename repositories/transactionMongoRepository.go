@@ -25,7 +25,7 @@ func CreateTransactionMongoRepository(db *mongodb.Storage, isLogVerbose bool) Tr
 	return &TransactionMongoRepository {db: db, isLogVerbose: isLogVerbose}
 }
 
-func (r *TransactionMongoRepository) GetTransaction(transactionFilter *models.TransactionFilter) []*models.Transaction {
+func (r *TransactionMongoRepository) GetTransaction(transactionFilter *models.TransactionFilterDTO) []*models.Transaction {
 	filter := database.CreateFilterBSON(transactionFilter, r.isLogVerbose)
 	cursor, err := r.db.Conn().Collection("transactions").Find(context.TODO(), filter)
 	if err != nil {

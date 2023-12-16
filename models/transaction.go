@@ -14,8 +14,15 @@ type(
     AccountType AccountType `bson:"accountType" json:"accountType"`
   }
 
-  TransactionFilter struct {
+  TransactionFilterDTO struct {
     FilterDay *int    `json:"filterDay,omitempty" bson:"filterDay,omitempty"`
     AccountID *string `json:"accountId,omitempty" bson:"accountId,omitempty"`
-}
+  }
+
+  TransactionCreateDTO struct {
+    AccountID     string `json:"accountId"`
+		Total float32 `json:"total"`
+		TransactionLabel string `json:"transactionLabel"`
+		AccountType AccountType `json:"accountType"`
+  }
 )

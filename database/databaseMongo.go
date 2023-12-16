@@ -66,7 +66,7 @@ func (db *MongoDatabase) IsLogVerbose() bool{
 	return db.logVerbose
 }
 
-func CreateFilterBSON(transactionFilter *models.TransactionFilter, isLogVerbose bool) bson.M {
+func CreateFilterBSON(transactionFilter *models.TransactionFilterDTO, isLogVerbose bool) bson.M {
 	filter := bson.M{}
 	if(transactionFilter == nil ) {
 		return filter
