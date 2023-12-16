@@ -19,6 +19,10 @@ type(
     AccountID *string `json:"accountId,omitempty" bson:"accountId,omitempty"`
   }
 
+  TransactionListDTO struct {
+		Filter	*TransactionFilterDTO `json:"filter,omitempty"`
+	}
+
   TransactionCreateDTO struct {
     AccountID     string `json:"accountId"`
 		Total float32 `json:"total"`

@@ -25,9 +25,7 @@ func (h *TransactionHandler) Mount(router fiber.Router) {
 
 // TransactionList returns a list of transaction
 func (h *TransactionHandler) TransactionList(c *fiber.Ctx) error {
-	payload := struct {
-		Filter	*models.TransactionFilterDTO `json:"filter,omitempty"`
-	}{}
+	payload := &models.TransactionListDTO{}
 	if err := c.BodyParser(&payload); err != nil && len(c.Body()) > 0  {
 		return c.JSON(fiber.Map{
 			"success": false,
