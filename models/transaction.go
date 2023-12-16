@@ -17,6 +17,7 @@ type(
   TransactionFilterDTO struct {
     FilterDay *int    `json:"filterDay,omitempty" bson:"filterDay,omitempty"`
     AccountID *string `json:"accountId,omitempty" bson:"accountId,omitempty"`
+    AccountType *string `json:"accountType,omitempty" bson:"accountType,omitempty"`
   }
 
   TransactionListDTO struct {
